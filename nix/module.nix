@@ -23,7 +23,10 @@ in
     };
   };
   config = lib.mkIf (cfg.enable) {
-    users.users.shutdown-thing.isSystemUser = true;
+    users.users.shutdown-thing = {
+      isSystemUser = true;
+      group = "shutdown-thing";
+    };
     users.groups.shutdown-thing = { };
 
     security.sudo.extraRules = [{
