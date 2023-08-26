@@ -12,10 +12,10 @@ fn sudo_systemctl(cmd: &str) -> Result<(), eyre::Error> {
     if out.status.success() {
         Ok(())
     } else {
-        let stdout = String::from_utf8_lossy(&out.stdout);
+        let stderr = String::from_utf8_lossy(&out.stderr);
         Err(eyre::format_err!(
             "Failed running systemctl {cmd}: {}",
-            stdout
+            stderr
         ))
     }
 }
