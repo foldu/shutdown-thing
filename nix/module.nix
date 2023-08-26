@@ -4,20 +4,22 @@ let
 in
 {
   options = with lib; {
-    enable = lib.mkEnableOption "shutdown-thing";
-    openFirewall = lib.mkOption {
-      type = types.bool;
-      default = false;
-      description = ''
-        Opens firewall.
-      '';
-    };
-    addr = lib.mkOption {
-      type = types.string;
-      default = "0.0.0.0:5154";
-      description = ''
-        Addr to run shutdown-thing on.
-      '';
+    services.shutdown-thing = {
+      enable = lib.mkEnableOption "shutdown-thing";
+      openFirewall = lib.mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Opens firewall.
+        '';
+      };
+      addr = lib.mkOption {
+        type = types.string;
+        default = "0.0.0.0:5154";
+        description = ''
+          Addr to run shutdown-thing on.
+        '';
+      };
     };
   };
   config = lib.mkIf (cfg.enable) {
