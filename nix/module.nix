@@ -12,7 +12,7 @@ in
         Opens firewall.
       '';
     };
-    addr = lib.mkOptions {
+    addr = lib.mkOption {
       type = types.string;
       default = "0.0.0.0:5154";
       description = ''
