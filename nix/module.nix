@@ -31,7 +31,7 @@ in
 
     security.sudo.extraRules = [{
       users = [ "shutdown-thing" ];
-      commands = lib.flip builtins.map [ "poweroff" "reboot" "suspend" ] (cmd: {
+      commands = lib.flip builtins.map [ "poweroff" "reboot" "suspend" "is-system-running" ] (cmd: {
         command = "${pkgs.systemd}/bin/systemctl ${cmd}";
         options = [ "NOPASSWD" ];
       });
