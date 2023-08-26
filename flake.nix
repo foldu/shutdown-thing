@@ -22,10 +22,11 @@
             cargoToml = builtins.fromTOML (builtins.readFile "${self}/Cargo.toml");
             version = cargoToml.package.version;
             pname = cargoToml.package.name;
+            craneLib = crane.lib.${system};
           in
-          crane.lib.${system}.buildPackage {
+          craneLib.buildPackage {
             inherit pname version;
-            src = self;
+            src = craneLib.cleanCargoSource (craneLib.path ./.);
           };
 
         shutdown-thing = pkgs.writeShellScriptBin "shutdown-thing" ''
