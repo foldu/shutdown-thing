@@ -2,8 +2,10 @@ use eyre::Context;
 
 pub(super) struct Systemd;
 
+const SUDO: &str = "/run/wrappers/bin/sudo";
+
 fn sudo_systemctl(cmd: &str) -> Result<(), eyre::Error> {
-    let out = std::process::Command::new("sudo")
+    let out = std::process::Command::new(SUDO)
         .arg("systemctl")
         .arg(cmd)
         .output()

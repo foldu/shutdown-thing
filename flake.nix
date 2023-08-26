@@ -30,7 +30,7 @@
           };
 
         shutdown-thing = pkgs.writeShellScriptBin "shutdown-thing" ''
-          PATH=${pkgs.systemd}/bin:${pkgs.sudo}/bin:$PATH
+          PATH=${pkgs.systemd}/bin:$PATH
           exec ${shutdown-thing-unwrapped}/bin/shutdown-thing
         '';
       in

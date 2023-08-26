@@ -14,7 +14,7 @@ in
         '';
       };
       addr = lib.mkOption {
-        type = types.string;
+        type = types.str;
         default = "0.0.0.0:5154";
         description = ''
           Addr to run shutdown-thing on.
