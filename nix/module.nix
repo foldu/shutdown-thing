@@ -8,13 +8,6 @@ in
   options = with lib; {
     services.shutdown-thing = {
       enable = lib.mkEnableOption "shutdown-thing";
-      openFirewall = lib.mkOption {
-        type = types.bool;
-        default = false;
-        description = ''
-          Opens firewall.
-        '';
-      };
       addr = lib.mkOption {
         type = types.str;
         default = "0.0.0.0:5154";
@@ -30,8 +23,6 @@ in
       group = "shutdown-thing";
     };
     users.groups.shutdown-thing = { };
-
-    networking.firewall.allowedTCPPorts = lib.optional (cfg.openFirewall) cfg.port;
 
     security.sudo.extraRules = [{
       users = [ "shutdown-thing" ];
