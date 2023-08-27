@@ -24,5 +24,6 @@ jobs:
         with:
           name: foldu
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+          pathsToPush: result
       - run: |
           nix build .
