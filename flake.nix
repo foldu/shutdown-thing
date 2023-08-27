@@ -17,7 +17,7 @@
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        shutdown-thing-unwrapped =
+        shutdown-thing =
           let
             cargoToml = builtins.fromTOML (builtins.readFile "${self}/Cargo.toml");
             version = cargoToml.package.version;
@@ -28,11 +28,6 @@
             inherit pname version;
             src = craneLib.cleanCargoSource (craneLib.path ./.);
           };
-
-        shutdown-thing = pkgs.writeShellScriptBin "shutdown-thing" ''
-          PATH=${pkgs.systemd}/bin:$PATH
-          exec ${shutdown-thing-unwrapped}/bin/shutdown-thing
-        '';
       in
       {
         defaultPackage = shutdown-thing;

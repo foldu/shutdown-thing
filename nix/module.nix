@@ -42,11 +42,15 @@ in
       enable = true;
       description = "Shuts things down.";
       wantedBy = [ "multi-user.target" ];
+      environment = {
+        HOST = cfg.addr;
+        SUDO = "/run/wrappers/sudo";
+        SYSTEMCTL = "${correctPkgs.systemctl}/bin/systemctl";
+      };
       serviceConfig = {
         Type = "simple";
         User = "shutdown-thing";
         Group = "shutdown-thing";
-        Environment = "HOST=${cfg.addr}";
         ExecStart = "${self.packages.${pkgs.system}.shutdown-thing}/bin/shutdown-thing";
       };
     };

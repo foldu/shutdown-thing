@@ -27,7 +27,7 @@ async fn main() -> Result<(), eyre::Error> {
 
     tracing::info!(config = ?config, "Configured with");
 
-    let controller = PowerController::new(config.backend).map(Arc::new)?;
+    let controller = PowerController::new(config.controller_config).map(Arc::new)?;
     let app = Router::new()
         .route("/info/version", get(handlers::version))
         .route("/info/status", get(handlers::status))

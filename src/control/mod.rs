@@ -11,10 +11,17 @@ use std::{
 };
 
 trait Backend {
-    fn shutdown(&self) -> Result<(), eyre::Error>;
-    fn reboot(&self) -> Result<(), eyre::Error>;
-    fn sleep(&self) -> Result<(), eyre::Error>;
-    fn check_ok(&self) -> Result<(), eyre::Error>;
+    fn shutdown(&self, config: &Config) -> Result<(), eyre::Error>;
+    fn reboot(&self, config: &Config) -> Result<(), eyre::Error>;
+    fn sleep(&self, config: &Config) -> Result<(), eyre::Error>;
+    fn check_ok(&self, config: &Config) -> Result<(), eyre::Error>;
+}
+
+#[derive(Debug)]
+pub struct Config {
+    pub sudo: String,
+    pub systemctl: String,
+    pub backend_kind: BackendKind,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -49,13 +56,14 @@ pub enum PowerState {
 }
 
 pub struct PowerController {
+    config: Config,
     changing_state: AtomicBool,
     backend: BackendImpl,
 }
 
 impl PowerController {
-    pub fn new(backend_kind: BackendKind) -> Result<Self, eyre::Error> {
-        let backend = match backend_kind {
+    pub fn new(config: Config) -> Result<Self, eyre::Error> {
+        let backend = match config.backend_kind {
             BackendKind::Native => {
                 #[cfg(target_os = "linux")]
                 {
@@ -65,10 +73,11 @@ impl PowerController {
             BackendKind::Dummy => Box::new(dummy::Dummy) as BackendImpl,
         };
 
-        backend.check_ok()?;
+        backend.check_ok(&config)?;
 
         Ok(Self {
             changing_state: AtomicBool::new(false),
+            config,
             backend,
         })
     }
@@ -88,9 +97,9 @@ impl PowerController {
             async move {
                 tokio::time::sleep(timeout).await;
                 let res = match state {
-                    PowerState::Sleep => me.backend.sleep(),
-                    PowerState::Reboot => me.backend.reboot(),
-                    PowerState::Poweroff => me.backend.shutdown(),
+                    PowerState::Sleep => me.backend.sleep(&me.config),
+                    PowerState::Reboot => me.backend.reboot(&me.config),
+                    PowerState::Poweroff => me.backend.shutdown(&me.config),
                 };
                 if let Err(e) = res {
                     tracing::error!(err = %e, "Failed changing power state");

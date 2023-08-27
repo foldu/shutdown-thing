@@ -1,12 +1,11 @@
+use super::Config;
 use eyre::Context;
 
 pub(super) struct Systemd;
 
-const SUDO: &str = "/run/wrappers/bin/sudo";
-
-fn sudo_systemctl(cmd: &str) -> Result<(), eyre::Error> {
-    let out = std::process::Command::new(SUDO)
-        .arg("systemctl")
+fn sudo_systemctl(config: &Config, cmd: &str) -> Result<(), eyre::Error> {
+    let out = std::process::Command::new(&config.sudo)
+        .arg(&config.systemctl)
         .arg(cmd)
         .output()
         .wrap_err("systemctl command not found")?;
@@ -23,19 +22,19 @@ fn sudo_systemctl(cmd: &str) -> Result<(), eyre::Error> {
 }
 
 impl super::Backend for Systemd {
-    fn shutdown(&self) -> Result<(), eyre::Error> {
-        sudo_systemctl("poweroff")
+    fn shutdown(&self, config: &Config) -> Result<(), eyre::Error> {
+        sudo_systemctl(config, "poweroff")
     }
 
-    fn reboot(&self) -> Result<(), eyre::Error> {
-        sudo_systemctl("reboot")
+    fn reboot(&self, config: &Config) -> Result<(), eyre::Error> {
+        sudo_systemctl(config, "reboot")
     }
 
-    fn sleep(&self) -> Result<(), eyre::Error> {
-        sudo_systemctl("suspend")
+    fn sleep(&self, config: &Config) -> Result<(), eyre::Error> {
+        sudo_systemctl(config, "suspend")
     }
 
-    fn check_ok(&self) -> Result<(), eyre::Error> {
-        sudo_systemctl("is-system-running")
+    fn check_ok(&self, config: &Config) -> Result<(), eyre::Error> {
+        sudo_systemctl(config, "is-system-running")
     }
 }
