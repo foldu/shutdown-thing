@@ -12,3 +12,6 @@ TODO: maybe use polkit + logind instead of sudo
 }
 ```
 For other options see ./nix/module.nix
+
+# Binary cache
+Latest @ https://app.cachix.org/cache/foldu
