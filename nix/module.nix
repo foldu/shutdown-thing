@@ -1,6 +1,7 @@
-{ self }: { pkgs, lib, config, ... }:
+{ self, nixpkgs }: { pkgs, lib, config, ... }:
 let
   cfg = config.services.shutdown-thing;
+  correctPkgs = nixpkgs.legacyPackages.${pkgs.system};
 in
 {
   options = with lib; {
@@ -32,7 +33,7 @@ in
     security.sudo.extraRules = [{
       users = [ "shutdown-thing" ];
       commands = lib.flip builtins.map [ "poweroff" "reboot" "suspend" "is-system-running" ] (cmd: {
-        command = "systemctl ${cmd}";
+        command = "${correctPkgs.systemd}/bin/systemctl ${cmd}";
         options = [ "NOPASSWD" ];
       });
     }];

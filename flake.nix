@@ -11,7 +11,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils, crane }: {
-    nixosModules.shutdown-thing = import ./nix/module.nix { inherit self; };
+    nixosModules.shutdown-thing = import ./nix/module.nix { inherit self nixpkgs; };
   } // flake-utils.lib.eachDefaultSystem
     (
       system:
