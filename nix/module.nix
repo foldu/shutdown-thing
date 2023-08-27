@@ -1,7 +1,8 @@
 { self, nixpkgs }: { pkgs, lib, config, ... }:
 let
   cfg = config.services.shutdown-thing;
-  correctPkgs = nixpkgs.legacyPackages.${pkgs.system};
+  system = pkgs.system;
+  correctPkgs = nixpkgs.legacyPackages.${system};
 in
 {
   options = with lib; {
@@ -30,6 +31,8 @@ in
     };
     users.groups.shutdown-thing = { };
 
+    networking.firewall.allowedTCPPorts = lib.optional (cfg.openFirewall) cfg.port;
+
     security.sudo.extraRules = [{
       users = [ "shutdown-thing" ];
       commands = lib.flip builtins.map [ "poweroff" "reboot" "suspend" "is-system-running" ] (cmd: {
@@ -44,14 +47,14 @@ in
       wantedBy = [ "multi-user.target" ];
       environment = {
         HOST = cfg.addr;
-        SUDO = "/run/wrappers/sudo";
+        SUDO = "/run/wrappers/bin/sudo";
         SYSTEMCTL = "${correctPkgs.systemctl}/bin/systemctl";
       };
       serviceConfig = {
         Type = "simple";
         User = "shutdown-thing";
         Group = "shutdown-thing";
-        ExecStart = "${self.packages.${pkgs.system}.shutdown-thing}/bin/shutdown-thing";
+        ExecStart = "${self.packages.${system}.shutdown-thing}/bin/shutdown-thing";
       };
     };
   };
