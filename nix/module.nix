@@ -39,7 +39,7 @@ in
       environment = {
         HOST = cfg.addr;
         SUDO = "/run/wrappers/bin/sudo";
-        SYSTEMCTL = "${correctPkgs.systemctl}/bin/systemctl";
+        SYSTEMCTL = "${correctPkgs.systemd}/bin/systemctl";
       };
       serviceConfig = {
         Type = "simple";
