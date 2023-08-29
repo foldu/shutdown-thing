@@ -46,9 +46,7 @@ in
       });
     }];
 
-    networking.firewall.allowedTCPPorts = lib.optional cfg.openFirewall [
-      cfg.port
-    ];
+    networking.firewall.allowedTCPPorts = lib.optional cfg.openFirewall cfg.port;
 
     systemd.services.shutdown-thing = {
       enable = true;
