@@ -1,5 +1,6 @@
 use super::Config;
 use eyre::Context;
+use which::which;
 
 pub(super) struct Systemd;
 
@@ -35,6 +36,14 @@ impl super::Backend for Systemd {
     }
 
     fn check_ok(&self, config: &Config) -> Result<(), eyre::Error> {
-        sudo_systemctl(config, "is-system-running")
+        let check_exists = |exec, env_var| {
+            which(exec).wrap_err_with(|| format!("Missing {env_var} binary {exec}"))
+        };
+        check_exists(&config.sudo, "SUDO")?;
+        check_exists(&config.systemctl, "SYSTEMCTL")?;
+        // FIXME: is-system-running returns funny return values, maybe parse the output instead
+        // NOTE: output is sometimes on stdout and sometimes on stderr
+        // sudo_systemctl(config, "is-system-running")
+        Ok(())
     }
 }
