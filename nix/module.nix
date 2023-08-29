@@ -22,6 +22,13 @@ in
           Port to run shutdown-thing on.
         '';
       };
+      openFirewall = lib.mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          Open shutdown-thing port.
+        '';
+      };
     };
   };
   config = lib.mkIf (cfg.enable) {
@@ -39,7 +46,9 @@ in
       });
     }];
 
-
+    networking.firewall.allowedTCPPorts = lib.optional cfg.openFirewall [
+      cfg.port
+    ];
 
     systemd.services.shutdown-thing = {
       enable = true;
