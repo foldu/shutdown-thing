@@ -52,7 +52,7 @@ async fn main() -> Result<(), eyre::Error> {
         }
     };
 
-    axum::Server::bind(&config.host)
+    axum::Server::bind(&config.socket_addr)
         .serve(app.into_make_service())
         .with_graceful_shutdown(shutdown)
         .await?;

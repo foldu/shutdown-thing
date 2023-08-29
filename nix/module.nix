@@ -10,9 +10,16 @@ in
       enable = lib.mkEnableOption "shutdown-thing";
       addr = lib.mkOption {
         type = types.str;
-        default = "0.0.0.0:5154";
+        default = "0.0.0.0";
         description = ''
           Addr to run shutdown-thing on.
+        '';
+      };
+      port = lib.mkOption {
+        type = types.port;
+        default = 5154;
+        description = ''
+          Port to run shutdown-thing on.
         '';
       };
     };
@@ -32,12 +39,15 @@ in
       });
     }];
 
+
+
     systemd.services.shutdown-thing = {
       enable = true;
       description = "Shuts things down.";
       wantedBy = [ "multi-user.target" ];
       environment = {
-        HOST = cfg.addr;
+        ADDR = cfg.addr;
+        PORT = toString cfg.port;
         SUDO = "/run/wrappers/bin/sudo";
         SYSTEMCTL = "${correctPkgs.systemd}/bin/systemctl";
       };
