@@ -52,8 +52,10 @@ async fn main() -> Result<(), eyre::Error> {
         }
     };
 
-    axum::Server::bind(&config.socket_addr)
-        .serve(app.into_make_service())
+    let listener = tokio::net::TcpListener::bind(&config.socket_addr)
+        .await
+        .with_context(|| eyre::format_err!("Failed binding to {}", config.socket_addr))?;
+    axum::serve(listener, app.into_make_service())
         .with_graceful_shutdown(shutdown)
         .await?;
 
